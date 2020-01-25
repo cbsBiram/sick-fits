@@ -1,0 +1,59 @@
+enum Permission {
+  ADMIN
+  USER
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
+}
+
+type User {
+  id: ID! @id
+  name: String!
+  email: String! @unique
+  password: String!
+  resetToken: String
+  resetTokenExpiry: Int
+  permissions: [Permission] @scalarList(strategy: RELATION)
+  cart: [CartItem!]! @relation(name: "UserCart")
+}
+
+type Item {
+  id: ID! @id
+  title: String!
+  description: String!
+  image: String
+  largeImage: String
+  price: Float!
+  user: User! @relation(name: "ItemUser")
+  # createdAt: DateTime
+  # updatedAt: DateTime @updatedAt
+}
+
+type CartItem {
+  id: ID! @id
+  quantity: Int! @default(value: 1)
+  item: Item @relation(name: "ItemCart") # relationship to Item
+  user: User! @relation(name: "UserCart") # relationship to User
+}
+
+type OrderItem {
+  id: ID! @id
+  title: String!
+  description: String!
+  image: String!
+  largeImage: String!
+  price: Float!
+  quantity: Int! @default(value: 1)
+  user: User
+}
+
+type Order {
+  id: ID! @id
+  items: [OrderItem!]!
+  total: Float!
+  user: User!
+  charge: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
